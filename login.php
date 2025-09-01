@@ -1,25 +1,28 @@
-<?php
-include "Database.php";
-session_start();
-if($_POST['username'] == '' || $_POST['password'] == ''){
-  foreach ($_POST as $key => $value) {
-      echo "<li>Please Enter ".$key.".</li>";
-  }
-  exit();
-}
-$uname = mysqli_real_escape_string($conn,$_POST['username']);
-$password = mysqli_real_escape_string($conn,$_POST['password']);
-
-$sql_query = "SELECT count(*) as cntUser FROM user WHERE username='".$uname."' and password='".$password."'";
-$result = mysqli_query($conn,$sql_query);
-$row = mysqli_fetch_array($result);
-$count = $row['cntUser'];
-if($row){
-     if($count > 0){
-        $_SESSION['uname'] = $uname;
-        echo 1;
-    }
-}else{
-    echo "<li>Invlid Username or password.</li>";
-    exit();
-}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Username and password validation in PHP using AJAX</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <script src="js/jquery-3.5.1.min.js"></script>
+  <script type="text/javascript" src="ajaxValidation.js"></script>
+  <style type="text/css">
+    li{color: red;}
+  </style>
+</head>
+<body>
+  <div class="container col-md-5">
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input type="email" class="form-control" id="userEmail">
+    </div>
+    <div class="mb-3">
+      <label class="col-sm-2 col-form-label">Password</label>
+      <input type="password" class="form-control" id="userPassword">
+    </div>
+    <p id="message"></p>
+    <div class="mb-3 col-md-4">
+      <button class="form-control btn btn-danger" id="checkValidation">Login</button>
+    </div>
+  </div>
+</body>
+</html>

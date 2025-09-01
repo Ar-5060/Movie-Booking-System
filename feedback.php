@@ -1,176 +1,213 @@
-  <?php
-session_start();
-?>
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Male_Fashion Template">
-    <meta name="keywords" content="Male_Fashion, unica, creative, html">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Feeback Page</title>
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/fontawesome.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.5">
+    <title>Feedback Page</title>
 
 
-    <!-- Css Styles -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
-    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
-    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="css/slicknav.min.css" type="  text/css">
-    <link rel="stylesheet" href="css/style.css" type="text/css">    
-
- 
-  </head>
-  <body>
-  
-<?php
-include("header.php");
+<?php session_start(); 
+if (!isset($_SESSION['admin'])) {
+  header("location:login.php");
+}
 ?>
-  <div class="content">    
-    <div class="ch3ontainer">      
-      <div class="row justify-content-center">
-        <div class="col-md-10">
-           <div class="row align-items-center">
-            <div class="col-lg-7 mb-5 mb-lg-0">
+<?php include_once("./templates/top.php"); ?>
+<?php include_once("./templates/navbar.php"); ?>
+<div class="container-fluid">
+  <div class="row">
+    
+    <?php include "./templates/sidebar.php"; ?>
 
-              <h2 class="mb-5">Fill the form. <br> It's easy.</h2>
-              <form onsubmit="return feedbackvalidate();">
-            
-                <div class="row">
-                  <div class="col-md-6 form-group">
-                    <input type="text" class="form-control" name="feedbackname" id="feedbackname" placeholder="First name">
-                    <div id="nameerror"></div>
-                  </div>
-                  
-                </div>
-                <div class="row">
-                  <div class="col-md-12 form-group">
-                    <input type="text" class="form-control" name="feedbackemail" id="feedbackemail" placeholder="Email"><div id="emailerror"></div>
-                  </div>
-                </div>
+      <div class="row">
+      	<div class="col-10">
+      		<h2>Feedback</h2>
+      	</div>
+      	<div class="col-2">
+      		<a href="#" data-toggle="modal" data-target="#add_feedback_modal" class="btn btn-primary btn-sm">Feedback detail</a>
+      	</div>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>Name</th>
+              <th>email</th>
+              <th>subject</th>
+              <th>massage</th>
+            </tr>
+          </thead>
+          <tbody id="product_list">
+           <?php
+include_once 'Database.php';
+$result = mysqli_query($conn,"SELECT * FROM feedback");
 
-                <div class="row">
-                  <div class="col-md-12 form-group">
-                    <textarea class="form-control" name="feedbackmassage" id="feedbackmassage" cols="30" rows="7" placeholder="Write your message"></textarea>
-                    <div id="massageerror"></div>
-                    <div id="msg"></div>
-                  </div>
-                </div>
-                 <?php 
-if (!isset($_SESSION['uname'])) {
-  ?>
-<div class="col-lg-12">
-            <div class="form-group">
-                     <button type="button" data-toggle="modal" data-target="#tailer_modal" class="btn btn-dark"><font style="color:white;">Send Massage</font></button>
-                  </div>
-    </div>
-      <div class="modal fade" id="tailer_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+if (mysqli_num_rows($result) > 0) {
+  while($row = mysqli_fetch_array($result)) {
+    $id=$row['id'];?>
+    <tr>
+              <td><?php echo $row['id'];?></td>
+              <td><?php echo $row['name'];?></td>
+              <td><?php echo $row['email'];?></td>
+              <td><?php echo $row['massage'];?></td>
+              
+              
+              <td><button data-toggle="modal" type="button" data-target="#edit_feedback_modal<?php echo $id;?>" class="btn btn-primary btn-sm">Edit Movie</button></td>
+              <td><button data-toggle="modal" type="button" data-target="#delete_feedback_modal<?php echo $id;?>" class="btn btn-danger btn-sm">Delete Movie</button></td>
+            </tr>
+
+ <div class="modal fade" id="delete_feedback_modal<?php echo $row['id'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <h3>You need to login</h3>
-      <a class="btn btn-primary btn-sm" href="login_form.php">Login</a>
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Movie</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="insert_movie" action="insert_data.php" method="post">
+          <h4> Yor Sour This id "<?php echo $row['id'];?>" is delete.</h4>
+          <input type="hidden" name="id" value="<?php echo $row['id'];?>">
+          <input type="submit" name="deletefeedback" id="deletefeedback" value="OK" class="btn btn-primary">
+          </form>
+
+      </div>
+    </div>
+  </div>
+</div> 
+
+<div class="modal fade" id="edit_feedback_modal<?php echo $row['id'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Feedback</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="insert_movie" action="insert_data.php" method="post" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label>Name</label>
+                <input type="hidden" name="e_id" value="<?php echo $row['id'];?>">
+                <input class="form-control" name="edit_feedback_name" id="edit_name" value="<?php echo $row['name'];?>">
+                <small></small>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label>Email</label>
+                <input class="form-control" name="edit_feedback_email" id="edit_email" value="<?php echo $row['email'];?>">
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label>Massage</label>
+                <input class="form-control" name="edit_feedback_massage" id ="edit_massage" value="<?php echo $row['massage']; ?>">
+              </div>
+            </div>
+            <div class="col-12">
+            
+              <input type="submit" name="updatefeedback" id="updatefeedback" value="update" class="btn btn-primary">
+            </div>
+          </div>
+          
+        </form>
+        <div id="preview"></div>
+      </div>
     </div>
   </div>
 </div> 
   <?php
-}else{
-?>
-                <div class="row">
-                  <div class="col-md-12">
-                              <button type="button" id="feedbackform" class="btn btn-primary">Send Massage</button>          
-                  </div>
-                </div>
-<?php }
-              ?>
-             </form>
 
+  }
+}
+?>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+
+
+<!-- Add Product Modal start -->
+<div class="modal fade" id="add_feedback_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Movie</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="myform" id="insert_movie" action="insert_data.php" method="post" enctype="multipart/form-data" onsubmit="return validateform()">
+          <div class="row">
+            <div class="col-12">
+              <div class="col-12">
+              <div class="form-group">
+                <label>Enter Your Name</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Enter Name">
+              </div>
             </div>
-            <div class="col-lg-4 ml-auto">
-              <h3 class="mb-4">Let's talk about everything.</h3>
-              <p>Do Let Us Carnow Your Thoughts and Suggestions on How We Can Survey You Better. Give us feedback on how you feel about our service.</p>
-              
+            <div class="col-12">
+              <div class="form-group">
+                <label>Enter Email</label>
+                <input type="text" name="email" class="form-control" id="email" placeholder="Enter Name">
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label>Massage</label>
+                <textarea class="form-control" name="massage" id="massage" placeholder="Enter Your Massage"></textarea>
+              </div>
+            </div>
+      
+           <div class="col-12">
+              <input type="submit" name="add_feedback" class="btn btn-primary add-product" value="Add Product">
             </div>
           </div>
-        </div>  
-        </div>
-      </div> 
+          
+        </form>
+        <div id="preview"></div>
+      </div>
+    </div>
   </div>
-    
+</div>
+<!-- Add movie Modal end -->
 
-    
- <?php
-   include("footer.php");
-   ?>
-<!-- Js Plugins -->
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.nice-select.min.js"></script>
-    <script src="js/jquery.nicescroll.min.js"></script>
-    <script src="js/jquery.magnific-popup.min.js"></script>
-    <script src="js/jquery.countdown.min.js"></script>
-    <script src="js/jquery.slicknav.js"></script>
-    <script src="js/mixitup.min.js"></script>
-    <script src="js/owl.carousel.min.js"></script>
-    <script src="js/main.js"></script>
-   <script type="text/javascript">
-    function feedbackvalidate(){
-      var error="";
-      var f_name = document.getElementById( "feedbackname" );
-      var f_email = document.getElementById( "feedbackemail" );
-      var f_massage = document.getElementById( "feedbackmassage" );
 
-      if( f_name.value == "" )
-    {
-  error = " <font color='red'>!Requrie Name.</font> ";
-  document.getElementById( "nameerror" ).innerHTML = error;
-  return false;
- }
-  if( f_email.value == "" )
- {
-  error = " <font color='red'>!Requrie Name.</font> ";
-  document.getElementById( "emailerror" ).innerHTML = error;
-  return false;
- }
-  if( f_massage.value == "" )
- {
-  error = " <font color='red'>!Requrie Name.</font> ";
-  document.getElementById( "massageerror" ).innerHTML = error;
-  return false;
- }
-    }
 
-     $(document).ready(function(){
-  $("#feedbackform").click(function(){
-    var feedbackname = $("#feedbackname").val().trim();
-    var feedbackemail = $("#feedbackemail").val().trim();
-    var feedbackmassage = $("#feedbackmassage").val().trim();
-    $.ajax({
-      url:'feedback_action.php',
-      type:'post',
-      data:{feedbackname:feedbackname,feedbackemail:feedbackemail,feedbackmassage:feedbackmassage},
-      success:function(response){
-          if(response == 1){
-                                    window.location = "feedback.php";
-                                }else{
-                                     error = " <font color='red'>!Invalid UserId.</font> ";
-                                     document.getElementById( "msg" ).innerHTML = error;
-                                      return false;
-                                }
-        $("#message").html(response);
-      }
-    });
-  });
-});
-   </script>
-</body>
-</html>
+<?php include_once("./templates/footer.php"); ?>
+
+
+<script>  
+function validateform(){  
+var name=document.myform.name.value;  
+var email=document.myform.email.value;  
+var massage=document.myform.massage.value;  
+
+if (name==""){  
+  alert("Requre Name");  
+  return false;  
+}else if(email==""){  
+  alert("Requre email Name");  
+  return false;  
+  } 
+  else if(massage==""){  
+  alert("Requre Massage Name");  
+  return false;  
+  }  
+}
+
+</script>
